@@ -561,14 +561,17 @@ def nl_parse(msg: str, dom: str) -> (dict, bool):
                 registrar.add(rg.strip())
     except IndexError:
         pass
-    try:
-        date.append({"created": msg.split("Creation Date:")[1].split("Updated Date:")[0].strip()})
-    except IndexError:
-        pass
-    try:
-        date.append({"updated": msg.split("Updated Date:")[1].split("DNSSEC:")[0].strip()})
-    except IndexError:
-        pass
+    for ms in msg.splitlines():
+        if ms.startswith("Creation Date:"):
+            try:
+                date.append({"created": ms.split("Creation Date:")[1].strip()})
+            except IndexError:
+                pass
+        if ms.startswith("Updated Date:"):
+            try:
+                date.append({"updated": ms.split("Updated Date:")[1].strip()})
+            except IndexError:
+                pass
     try:
         ns = msg.split("Domain nameservers:")[1].split("Record maintained by:")[0].strip()
         for n in ns.splitlines():
