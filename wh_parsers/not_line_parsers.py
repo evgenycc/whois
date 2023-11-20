@@ -1,8 +1,8 @@
 """
 A set of parsers for different domain zones, the information from which is obtained in a non-linear form.
 """
-
 from wh_parsers.data_update import data_update
+from wh_parsers.date_parse import date_parse
 
 
 def am_parse(msg: str, dom: str) -> (dict, bool):
@@ -19,17 +19,17 @@ def am_parse(msg: str, dom: str) -> (dict, bool):
                 pass
         if ms.strip().startswith("Registered:"):
             try:
-                date.append({"created": ms.strip().split(": ")[1].strip()})
+                date.append({"created": date_parse(ms.strip().split(": ")[1].strip())})
             except IndexError:
                 pass
         if ms.strip().startswith("Last modified:"):
             try:
-                date.append({"updated": ms.strip().split(": ")[1].strip()})
+                date.append({"updated": date_parse(ms.strip().split(": ")[1].strip())})
             except IndexError:
                 pass
         if ms.strip().startswith("Expires:"):
             try:
-                date.append({"expires": ms.strip().split(": ")[1].strip()})
+                date.append({"expires": date_parse(ms.strip().split(": ")[1].strip())})
             except IndexError:
                 pass
         if ms.strip().startswith("DNS servers:"):
@@ -69,13 +69,13 @@ def as_parse(msg: str, dom: str) -> (dict, bool):
         created = msg.split("Relevant dates:")[1].split("     Registry fee due on")[0].strip(). \
                     split("Registered on ")[1].strip()
         if created.strip() != "":
-            date.append({"created": created})
+            date.append({"created": date_parse(created)})
     except IndexError:
         pass
     try:
         expires = msg.split("     Registry fee due on ")[1].split("Registration status:")[0].strip()
         if expires.strip() != "":
-            date.append({"expires": expires})
+            date.append({"expires": date_parse(expires)})
     except IndexError:
         pass
     try:
@@ -103,11 +103,11 @@ def aw_parse(msg: str, dom: str) -> (dict, bool):
             if ms.strip().startswith("Creation Date:"):
                 created = ms.strip().split(": ")[1].strip()
                 if created.strip() != "":
-                    date.append({"created": created})
+                    date.append({"created": date_parse(created)})
             if ms.strip().startswith("Updated Date:"):
                 updated = ms.strip().split(": ")[1].strip()
                 if updated.strip() != "":
-                    date.append({"updated": updated})
+                    date.append({"updated": date_parse(updated)})
         except IndexError:
             pass
     try:
@@ -143,7 +143,7 @@ def be_parse(msg: str, dom: str) -> (dict, bool):
             if ms.strip().startswith("Registered:"):
                 created = ms.strip().split(":")[1].strip()
                 if created.strip() != "":
-                    date.append({"created": created})
+                    date.append({"created": date_parse(created)})
         except IndexError:
             pass
     try:
@@ -199,11 +199,11 @@ def bn_parse(msg: str, dom: str) -> (dict, bool):
             if ms.strip().startswith("Registrar:"):
                 registrar.add(ms.strip().split("Registrar:")[1].strip())
             if ms.strip().startswith("Creation Date:"):
-                date.append({"created": ms.strip().split("Creation Date:")[1].strip()})
+                date.append({"created": date_parse(ms.strip().split("Creation Date:")[1].strip())})
             if ms.strip().startswith("Modified Date:"):
-                date.append({"updated": ms.strip().split("Modified Date:")[1].strip()})
+                date.append({"updated": date_parse(ms.strip().split("Modified Date:")[1].strip())})
             if ms.strip().startswith("Expiration Date:"):
-                date.append({"expires": ms.strip().split("Expiration Date:")[1].strip()})
+                date.append({"expires": date_parse(ms.strip().split("Expiration Date:")[1].strip())})
         except IndexError:
             pass
     try:
@@ -229,11 +229,11 @@ def edu_parse(msg: str, dom: str) -> (dict, bool):
     for ms in msg.splitlines():
         try:
             if ms.strip().startswith("Domain record activated:"):
-                date.append({"created": ms.strip().split("Domain record activated:")[1].strip()})
+                date.append({"created": date_parse(ms.strip().split("Domain record activated:")[1].strip())})
             if ms.strip().startswith("Domain record last updated:"):
-                date.append({"updated": ms.strip().split("Domain record last updated:")[1].strip()})
+                date.append({"updated": date_parse(ms.strip().split("Domain record last updated:")[1].strip())})
             if ms.strip().startswith("Domain expires:"):
-                date.append({"expires": ms.strip().split("Domain expires:")[1].strip()})
+                date.append({"expires": date_parse(ms.strip().split("Domain expires:")[1].strip())})
         except IndexError:
             pass
     try:
@@ -261,11 +261,11 @@ def ee_parse(msg: str, dom: str) -> (dict, bool):
         if dom_info.strip() != "":
             for df in dom_info.splitlines():
                 if df.strip().startswith('registered:'):
-                    date.append({"created": df.strip().split("registered:")[1].strip()})
+                    date.append({"created": date_parse(df.strip().split("registered:")[1].strip())})
                 if df.strip().startswith('changed:'):
-                    date.append({"updated": df.strip().split("changed:")[1].strip()})
+                    date.append({"updated": date_parse(df.strip().split("changed:")[1].strip())})
                 if df.strip().startswith('expire:'):
-                    date.append({"expires": df.strip().split("expire:")[1].strip()})
+                    date.append({"expires": date_parse(df.strip().split("expire:")[1].strip())})
     except IndexError:
         pass
     try:
@@ -342,13 +342,13 @@ def gg_parse(msg: str, dom: str) -> (dict, bool):
     try:
         cr_d = msg.split("Relevant dates:")[1].split("Registration status:")[0].split("Registered on")[1]. \
             split("Registry fee")[0].strip()
-        date.append({"created": cr_d})
+        date.append({"created": date_parse(cr_d)})
     except IndexError:
         pass
     # expires
     try:
         ex_d = msg.split("Relevant dates:")[1].split("Registration status:")[0].split("Registry fee due on")[1].strip()
-        date.append({"expires": ex_d})
+        date.append({"expires": date_parse(ex_d)})
     except IndexError:
         pass
     # nserver
@@ -376,9 +376,9 @@ def hk_parse(msg: str, dom: str) -> (dict, bool):
             if ms.strip().startswith("Registrar Name:"):
                 registrar.add(ms.strip().split("Registrar Name:")[1].strip())
             if ms.strip().startswith("Domain Name Commencement Date:"):
-                date.append({"created": ms.strip().split("Domain Name Commencement Date:")[1].strip()})
+                date.append({"created": date_parse(ms.strip().split("Domain Name Commencement Date:")[1].strip())})
             if ms.strip().startswith("Expiry Date:"):
-                date.append({"expires": ms.strip().split("Expiry Date:")[1].strip()})
+                date.append({"expires": date_parse(ms.strip().split("Expiry Date:")[1].strip())})
         except IndexError:
             pass
     try:
@@ -411,15 +411,15 @@ def it_parse(msg: str, dom: str) -> (dict, bool):
     except IndexError:
         pass
     try:
-        date.append({"created": msg.split("Created:")[1].split("Last Update:")[0].strip()})
+        date.append({"created": date_parse(msg.split("Created:")[1].split("Last Update:")[0].strip())})
     except IndexError:
         pass
     try:
-        date.append({"updated": msg.split("Last Update:")[1].split("Expire Date:")[0].strip()})
+        date.append({"updated": date_parse(msg.split("Last Update:")[1].split("Expire Date:")[0].strip())})
     except IndexError:
         pass
     try:
-        date.append({"expires": msg.split("Expire Date:")[1].split("Registrant")[0].strip()})
+        date.append({"expires": date_parse(msg.split("Expire Date:")[1].split("Registrant")[0].strip())})
     except IndexError:
         pass
     try:
@@ -456,13 +456,13 @@ def je_parse(msg: str, dom: str) -> (dict, bool):
     try:
         cr_d = msg.split("Relevant dates:")[1].split("Registration status:")[0].split("Registered on")[1]. \
             split("Registry fee")[0].strip()
-        date.append({"created": cr_d})
+        date.append({"created": date_parse(cr_d)})
     except IndexError:
         pass
     # expires
     try:
         ex_d = msg.split("Relevant dates:")[1].split("Registration status:")[0].split("Registry fee due on")[1].strip()
-        date.append({"expires": ex_d})
+        date.append({"expires": date_parse(ex_d)})
     except IndexError:
         pass
     # nserver
@@ -488,17 +488,17 @@ def kg_parse(msg: str, dom: str) -> (dict, bool):
     for ms in msg.splitlines():
         if ms.strip().startswith("Record created:"):
             try:
-                date.append({"created": ms.strip().split("Record created:")[1].strip()})
+                date.append({"created": date_parse(ms.strip().split("Record created:")[1].strip())})
             except IndexError:
                 pass
         if ms.strip().startswith("Record last updated on:"):
             try:
-                date.append({"updated": ms.strip().split("Record last updated on:")[1].strip()})
+                date.append({"updated": date_parse(ms.strip().split("Record last updated on:")[1].strip())})
             except IndexError:
                 pass
         if ms.strip().startswith("Record expires on:"):
             try:
-                date.append({"expires": ms.strip().split("Record expires on:")[1].strip()})
+                date.append({"expires": date_parse(ms.strip().split("Record expires on:")[1].strip())})
             except IndexError:
                 pass
 
@@ -526,11 +526,11 @@ def mo_parse(msg: str, dom: str) -> (dict, bool):
     nserver = []
 
     try:
-        date.append({"created": msg.split("Record created on")[1].split("Record expires on")[0].strip()})
+        date.append({"created": date_parse(msg.split("Record created on")[1].split("Record expires on")[0].strip())})
     except IndexError:
         pass
     try:
-        date.append({"expires": msg.split("Record expires on")[1].split("Domain name servers:")[0].strip()})
+        date.append({"expires": date_parse(msg.split("Record expires on")[1].split("Domain name servers:")[0].strip())})
     except IndexError:
         pass
     try:
@@ -564,12 +564,12 @@ def nl_parse(msg: str, dom: str) -> (dict, bool):
     for ms in msg.splitlines():
         if ms.startswith("Creation Date:"):
             try:
-                date.append({"created": ms.split("Creation Date:")[1].strip()})
+                date.append({"created": date_parse(ms.split("Creation Date:")[1].strip())})
             except IndexError:
                 pass
         if ms.startswith("Updated Date:"):
             try:
-                date.append({"updated": ms.split("Updated Date:")[1].strip()})
+                date.append({"updated": date_parse(ms.split("Updated Date:")[1].strip())})
             except IndexError:
                 pass
     try:
@@ -602,17 +602,17 @@ def sg_parse(msg: str, dom: str) -> (dict, bool):
             for d in dt.splitlines():
                 if d.strip().startswith("Creation Date:"):
                     try:
-                        date.append({"created": d.strip().split("Creation Date:")[1].strip()})
+                        date.append({"created": date_parse(d.strip().split("Creation Date:")[1].strip())})
                     except IndexError:
                         pass
                 if d.strip().startswith("Modified Date:"):
                     try:
-                        date.append({"updated": d.strip().split("Modified Date:")[1].strip()})
+                        date.append({"updated": date_parse(d.strip().split("Modified Date:")[1].strip())})
                     except IndexError:
                         pass
                 if d.strip().startswith("Expiration Date:"):
                     try:
-                        date.append({"expires": d.strip().split("Expiration Date:")[1].strip()})
+                        date.append({"expires": date_parse(d.strip().split("Expiration Date:")[1].strip())})
                     except IndexError:
                         pass
     except IndexError:
@@ -644,7 +644,7 @@ def sm_parse(msg: str, dom: str) -> (dict, bool):
     for ms in msg.splitlines():
         if ms.strip().startswith("Registration date:"):
             try:
-                date.append({"created": ms.strip().split("Registration date:")[1].strip()})
+                date.append({"created": date_parse(ms.strip().split("Registration date:")[1].strip())})
             except IndexError:
                 pass
     try:
@@ -673,7 +673,7 @@ def tn_parse(msg: str, dom: str) -> (dict, bool):
     for ms in msg.splitlines():
         if ms.strip().startswith("Creation date.......:"):
             try:
-                date.append({"created": ms.strip().split("Creation date.......:")[1].strip()})
+                date.append({"created": date_parse(ms.strip().split("Creation date.......:")[1].strip())})
             except IndexError:
                 pass
         if ms.strip().startswith("Registrar...........:"):
@@ -708,12 +708,12 @@ def tr_parse(msg: str, dom: str) -> (dict, bool):
     for ms in msg.splitlines():
         if ms.strip().startswith("Created on..............:"):
             try:
-                date.append({"created": ms.strip().split("Created on..............:")[1].strip()})
+                date.append({"created": date_parse(ms.strip().split("Created on..............:")[1].strip())})
             except IndexError:
                 pass
         if ms.strip().startswith("Expires on..............:"):
             try:
-                date.append({"expires": ms.strip().split("Expires on..............:")[1].strip()})
+                date.append({"expires": date_parse(ms.strip().split("Expires on..............:")[1].strip())})
             except IndexError:
                 pass
         if ms.strip().startswith("Organization Name	:"):
@@ -748,12 +748,12 @@ def tw_parse(msg: str, dom: str) -> (dict, bool):
     for ms in msg.splitlines():
         if ms.strip().startswith("Record created on"):
             try:
-                date.append({"created": ms.strip().split("Record created on")[1].strip()})
+                date.append({"created": date_parse(ms.strip().split("Record created on")[1].strip())})
             except IndexError:
                 pass
         if ms.strip().startswith("Record expires on"):
             try:
-                date.append({"expires": ms.strip().split("Record expires on")[1].strip()})
+                date.append({"expires": date_parse(ms.strip().split("Record expires on")[1].strip())})
             except IndexError:
                 pass
         if ms.strip().startswith("Registration Service Provider:"):
@@ -810,17 +810,17 @@ def uk_parse(msg: str, dom: str) -> (dict, bool):
             for d in dt.splitlines():
                 try:
                     if d.strip().startswith("Registered on:"):
-                        date.append({"created": d.strip().split("Registered on:")[1].strip()})
+                        date.append({"created": date_parse(d.strip().split("Registered on:")[1].strip())})
                 except IndexError:
                     pass
                 try:
                     if d.strip().startswith("Last updated:"):
-                        date.append({"updated": d.strip().split("Last updated:")[1].strip()})
+                        date.append({"updated": date_parse(d.strip().split("Last updated:")[1].strip())})
                 except IndexError:
                     pass
                 try:
                     if d.strip().startswith("Expiry date:"):
-                        date.append({"expires": d.strip().split("Expiry date:")[1].strip()})
+                        date.append({"expires": date_parse(d.strip().split("Expiry date:")[1].strip())})
                 except IndexError:
                     pass
     except IndexError:
@@ -857,7 +857,7 @@ def xn__j6w193g_parse(msg: str, dom: str) -> (dict, bool):
                 pass
         if ms.strip().startswith("Expiry Date:"):
             try:
-                date.append({"expires": ms.strip().split("Expiry Date:")[1].strip()})
+                date.append({"expires": date_parse(ms.strip().split("Expiry Date:")[1].strip())})
             except IndexError:
                 pass
     try:
@@ -896,12 +896,12 @@ def xn__kprw13d_parse(msg: str, dom: str) -> (dict, bool):
                 pass
         if ms.strip().startswith("Record expires on"):
             try:
-                date.append({"expires": ms.strip().split("Record expires on")[1].strip()})
+                date.append({"expires": date_parse(ms.strip().split("Record expires on")[1].strip())})
             except IndexError:
                 pass
         if ms.strip().startswith("Record created on"):
             try:
-                date.append({"created": ms.strip().split("Record created on")[1].strip()})
+                date.append({"created": date_parse(ms.strip().split("Record created on")[1].strip())})
             except IndexError:
                 pass
     try:
@@ -940,12 +940,12 @@ def xn__kpry57d_parse(msg: str, dom: str) -> (dict, bool):
                 pass
         if ms.strip().startswith("Record expires on"):
             try:
-                date.append({"expires": ms.strip().split("Record expires on")[1].strip()})
+                date.append({"expires": date_parse(ms.strip().split("Record expires on")[1].strip())})
             except IndexError:
                 pass
         if ms.strip().startswith("Record created on"):
             try:
-                date.append({"created": ms.strip().split("Record created on")[1].strip()})
+                date.append({"created": date_parse(ms.strip().split("Record created on")[1].strip())})
             except IndexError:
                 pass
     try:

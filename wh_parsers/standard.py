@@ -1,8 +1,9 @@
 """
 Parser for domain zones whose information is transferred in linear form.
+pip install python-dateutil
 """
-
 from wh_parsers.data_update import data_update
+from wh_parsers.date_parse import date_parse
 
 
 def standard(msg: str, dom: str) -> (dict, bool):
@@ -86,7 +87,7 @@ def standard(msg: str, dom: str) -> (dict, bool):
                     cr_d = ms.strip().split(spl)[1].strip()
                     if cr_d.endswith("."):
                         cr_d = cr_d[:-1]
-                    date.append({"created": cr_d})
+                    date.append({"created": date_parse(cr_d)})
 
             # updated
             if ms.strip().startswith(("Modification date:", "modified:", "Updated Date:", "Updated:",
@@ -107,7 +108,7 @@ def standard(msg: str, dom: str) -> (dict, bool):
                         up_d = ms.strip().split(spl)[1].strip()
                         if up_d.endswith("."):
                             up_d = up_d[:-1]
-                        date.append({"updated": up_d})
+                        date.append({"updated": date_parse(up_d)})
                         changed = True
 
             # expires
@@ -132,7 +133,7 @@ def standard(msg: str, dom: str) -> (dict, bool):
                     ex_d = ms.strip().split(spl)[1].strip()
                     if ex_d.endswith("."):
                         ex_d = ex_d[:-1]
-                    date.append({"expires": ex_d})
+                    date.append({"expires": date_parse(ex_d)})
 
             # nserver
             if ms.strip().startswith(("DNS:", "nserver:", "nameserver:", "Name Server:", "Nameserver:", "NS 1   :",
