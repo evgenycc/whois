@@ -9,6 +9,10 @@ months = {"Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04", "Jun": "06", "Jul"
 
 
 def date_parse(date: str):
+    if "before " in date:
+        dt = date.replace("before ", "")
+        date = f'{dt.split("-")[1]}-{dt.split("-")[0].replace(dt.split("-")[0], months[dt.split("-")[0]])}-01 00:00:00'
+        return dtm.strptime(parse(date).strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
     if "(GMT" in date or "(UTC" in date:
         return dtm.strptime(parse(date.split("(")[0].strip()).strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
     if date.strip() == "-" or not date.strip():
