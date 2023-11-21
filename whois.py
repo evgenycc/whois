@@ -24,7 +24,7 @@ def run_whois(server: str, query: str) -> (tuple, bool):
         return msg
     except Exception:
         s.close()
-        return False, False
+        return False
 
 
 def whois(dom: str, wh_serv=False) -> (dict, str):
